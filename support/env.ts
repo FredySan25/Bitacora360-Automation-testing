@@ -14,7 +14,7 @@ export function getTestUser(): { email: string; password: string } {
 
   if (!email || !password) {
     throw new Error(
-      "Faltan E2E_USER_EMAIL y E2E_USER_PASSWORD. Copia .env.example como .env y llena los datos del usuario de pruebas.",
+      "Missing E2E_USER_EMAIL and E2E_USER_PASSWORD. Copy .env.example to .env and fill in the test user's credentials.",
     );
   }
 

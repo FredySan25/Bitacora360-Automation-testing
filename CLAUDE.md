@@ -4,7 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Idioma
 
-La documentación (este archivo, el README) va en español. El código se escribe siempre en inglés: nombres de archivos, clases, variables, funciones y comentarios. Los textos de la interfaz que usan los locators y las aserciones se quedan en español, porque así los muestra la app.
+La documentación (este archivo, el README) va en español. El código se escribe siempre en inglés: nombres de archivos, clases, variables, funciones, comentarios, títulos de las pruebas (`test`, `describe`) y mensajes de error o de `skip`. Los datos de prueba (correos, contraseñas de ejemplo) también van en inglés.
+
+Lo único en español dentro del código es el texto visible de la app, y vive en un solo lugar: `support/locales/es.ts`. Los page objects y las specs nunca escriben ese texto directamente; lo leen de `ui` (`support/ui.ts`) con claves en inglés, por ejemplo `ui.login.heading`. Un texto nuevo de la interfaz se agrega primero al diccionario.
+
+La app hoy solo existe en español. Cuando soporte más idiomas, cada uno será otro archivo en `support/locales/` con la misma forma (tipo `UiText`), y `support/ui.ts` es el único punto donde se elige cuál usar.
 
 ## Qué es este proyecto
 
@@ -27,7 +31,7 @@ npm run codegen           # graba acciones contra http://localhost:3000
 npm run typecheck         # tsc --noEmit; es la única verificación estática, no hay linter
 
 npx playwright test tests/auth/login.spec.ts        # un archivo
-npx playwright test -g "credenciales incorrectas"   # una prueba por título
+npx playwright test -g "wrong credentials"          # una prueba por título
 ```
 
 No hace falta levantar la app a mano: Playwright corre `npm run dev` en `../Bitacora360WebProyect`, espera a que responda `/login` y la apaga al terminar. Si ya hay un servidor en `http://localhost:3000`, lo reutiliza. Definir `BASE_URL` (en `.env`) desactiva el servidor local y apunta las pruebas a esa URL.
@@ -55,7 +59,7 @@ Las carpetas reflejan los grupos de rutas de la app web: `tests/auth` cubre `app
 
 ## Convenciones
 
-- Los locators viven en los page objects y usan roles y texto visible (`getByRole`, `getByLabel`), no clases CSS.
+- Los locators viven en los page objects y usan roles y texto visible (`getByRole`, `getByLabel`), no clases CSS. El texto sale de `ui`, no de literales.
 - Después de navegar a una pantalla con formulario, espera la hidratación de React antes de escribir: `waitForHydration(locator)` de `support/hydration.ts`. Contra `next dev`, lo que se escribe antes de la hidratación nunca llega al estado de React. Los page objects ya lo hacen en `goto()`.
 - Acota las alertas al formulario (`form.getByRole("alert")`): Next.js agrega su propio anunciador de rutas con `role="alert"` en todas las páginas.
 - Las pruebas de registro simulan la llamada a Supabase con `RegisterPage.mockSignup(status, body)`, que intercepta `**/auth/v1/signup*`; así no se crean usuarios reales ni se envían correos.

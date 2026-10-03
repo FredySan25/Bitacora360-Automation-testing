@@ -1,29 +1,30 @@
 import { expect, test } from "@playwright/test";
 import { DashboardShell } from "../../pages/DashboardShell";
 import { getTestUser } from "../../support/env";
+import { ui } from "../../support/ui";
 
 const MODULES = [
-  { link: "Hábitos", path: "/habits", title: "Hábitos" },
-  { link: "Finanzas", path: "/finance", title: "Finanzas" },
-  { link: "Watchlist", path: "/watchlist", title: "Watchlist" },
-  { link: "Hoy", path: "/today", title: "Entrada del día" },
+  { path: "/habits", text: ui.modules.habits },
+  { path: "/finance", text: ui.modules.finance },
+  { path: "/watchlist", text: ui.modules.watchlist },
+  { path: "/today", text: ui.modules.today },
 ];
 
-test.describe("Navegación del dashboard", () => {
-  test("el menú lateral lleva a cada módulo y marca el activo", async ({ page }) => {
+test.describe("Dashboard navigation", () => {
+  test("the sidebar leads to each module and marks the active one", async ({ page }) => {
     const shell = new DashboardShell(page);
     await page.goto("/today");
 
     for (const module of MODULES) {
-      await shell.navLink(module.link).click();
+      await shell.navLink(module.text.navLink).click();
 
       await expect(page).toHaveURL(new RegExp(`${module.path}$`));
-      await expect(shell.pageTitle(module.title)).toBeVisible();
-      await expect(shell.navLink(module.link)).toHaveAttribute("aria-current", "page");
+      await expect(shell.pageTitle(module.text.title)).toBeVisible();
+      await expect(shell.navLink(module.text.navLink)).toHaveAttribute("aria-current", "page");
     }
   });
 
-  test("muestra el email del usuario en el menú lateral", async ({ page }) => {
+  test("shows the user's email in the sidebar", async ({ page }) => {
     const shell = new DashboardShell(page);
     await page.goto("/today");
 
@@ -31,7 +32,7 @@ test.describe("Navegación del dashboard", () => {
     await expect(shell.logoutButton).toBeVisible();
   });
 
-  test("con sesión activa, /login y /register redirigen a /today", async ({ page }) => {
+  test("with an active session, /login and /register redirect to /today", async ({ page }) => {
     for (const authPath of ["/login", "/register"]) {
       await page.goto(authPath);
 
@@ -39,7 +40,7 @@ test.describe("Navegación del dashboard", () => {
     }
   });
 
-  test("con sesión activa, la raíz redirige a /today", async ({ page }) => {
+  test("with an active session, the root redirects to /today", async ({ page }) => {
     await page.goto("/");
 
     await expect(page).toHaveURL(/\/today$/);

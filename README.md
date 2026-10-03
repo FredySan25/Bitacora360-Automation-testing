@@ -43,7 +43,7 @@ Un archivo o una prueba en particular:
 
 ```bash
 npx playwright test tests/auth/login.spec.ts
-npx playwright test -g "credenciales incorrectas"
+npx playwright test -g "wrong credentials"
 ```
 
 Para probar contra una app desplegada, define `BASE_URL` en `.env`.
@@ -53,6 +53,7 @@ Para probar contra una app desplegada, define `BASE_URL` en `.env`.
 ```
 pages/       Page objects: locators y acciones de cada pantalla
 support/     Utilidades compartidas (credenciales, espera de hidratación)
+  locales/        Textos visibles de la app, un archivo por idioma (hoy solo es.ts)
 tests/
   auth.setup.ts   Inicia sesión una vez y guarda la sesión en .auth/
   auth/           Sin sesión: login, registro y protección de rutas
@@ -74,6 +75,12 @@ La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
 ## Convenciones
 
 - Una spec por módulo o pantalla, en la carpeta de su grupo de rutas.
+- El código va en inglés: nombres, comentarios, títulos de las pruebas, mensajes
+  y datos de prueba.
+- El texto visible de la app (en español) vive solo en `support/locales/es.ts`.
+  Los page objects y las specs lo leen de `ui` (`support/ui.ts`), por ejemplo
+  `ui.login.heading`, en lugar de escribirlo directamente. Para probar otro
+  idioma se agrega otro archivo en `support/locales/` con la misma forma.
 - Los locators viven en los page objects y usan roles y textos visibles
   (`getByRole`, `getByLabel`), no clases CSS.
 - Después de navegar a una pantalla con formulario, espera la hidratación

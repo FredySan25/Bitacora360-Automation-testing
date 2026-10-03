@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { ui } from "../../support/ui";
 
 const PROTECTED_ROUTES = [
   "/today",
@@ -9,17 +10,17 @@ const PROTECTED_ROUTES = [
   "/watchlist",
 ];
 
-test.describe("Protección de rutas sin sesión", () => {
+test.describe("Route protection without a session", () => {
   for (const route of PROTECTED_ROUTES) {
-    test(`${route} redirige a /login`, async ({ page }) => {
+    test(`${route} redirects to /login`, async ({ page }) => {
       await page.goto(route);
 
       await expect(page).toHaveURL(/\/login$/);
-      await expect(page.getByRole("heading", { name: "Iniciar sesión" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: ui.login.heading })).toBeVisible();
     });
   }
 
-  test("la raíz redirige a /login", async ({ page }) => {
+  test("the root redirects to /login", async ({ page }) => {
     await page.goto("/");
 
     await expect(page).toHaveURL(/\/login$/);

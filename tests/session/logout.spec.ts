@@ -4,9 +4,9 @@ import { LoginPage } from "../../pages/LoginPage";
 import { getTestUser, hasTestUser } from "../../support/env";
 
 test.describe("Logout", () => {
-  test.skip(!hasTestUser(), "Requiere E2E_USER_EMAIL y E2E_USER_PASSWORD en .env");
+  test.skip(!hasTestUser(), "Requires E2E_USER_EMAIL and E2E_USER_PASSWORD in .env");
 
-  test("cerrar sesión regresa a /login y vuelve a proteger el dashboard", async ({ page }) => {
+  test("logging out returns to /login and protects the dashboard again", async ({ page }) => {
     const user = getTestUser();
     const loginPage = new LoginPage(page);
     const shell = new DashboardShell(page);

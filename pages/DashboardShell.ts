@@ -1,4 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
+import { ui } from "../support/ui";
 
 /** Layout shared by every page under /(dashboard): sidebar, user info and logout. */
 export class DashboardShell {
@@ -7,7 +8,7 @@ export class DashboardShell {
 
   constructor(readonly page: Page) {
     this.sidebar = page.getByRole("complementary");
-    this.logoutButton = page.getByRole("button", { name: "Cerrar sesión" });
+    this.logoutButton = page.getByRole("button", { name: ui.shell.logout });
   }
 
   navLink(name: string): Locator {

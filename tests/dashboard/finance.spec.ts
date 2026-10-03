@@ -1,11 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { DashboardShell } from "../../pages/DashboardShell";
+import { ui } from "../../support/ui";
 
-test.describe("Finanzas", () => {
-  test("carga la página del módulo", async ({ page }) => {
+test.describe("Finance", () => {
+  test("loads the module page", async ({ page }) => {
     await page.goto("/finance");
 
-    await expect(new DashboardShell(page).pageTitle("Finanzas")).toBeVisible();
-    await expect(page.getByText("Tus ingresos y gastos del mes.")).toBeVisible();
+    await expect(new DashboardShell(page).pageTitle(ui.modules.finance.title)).toBeVisible();
+    await expect(page.getByText(ui.modules.finance.description)).toBeVisible();
   });
 });

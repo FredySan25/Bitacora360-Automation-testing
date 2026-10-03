@@ -1,20 +1,23 @@
 import { expect, test } from "@playwright/test";
 import { DashboardShell } from "../../pages/DashboardShell";
+import { ui } from "../../support/ui";
+
+const habits = ui.modules.habits;
 
 const TABS = [
-  { label: "Progreso", path: "/habits/progress" },
-  { label: "Gym", path: "/habits/gym" },
-  { label: "Diario", path: "/habits" },
+  { label: habits.tabs.progress, path: "/habits/progress" },
+  { label: habits.tabs.gym, path: "/habits/gym" },
+  { label: habits.tabs.daily, path: "/habits" },
 ];
 
-test.describe("Hábitos", () => {
-  test("las pestañas cambian de sección y marcan la activa", async ({ page }) => {
+test.describe("Habits", () => {
+  test("the tabs switch sections and mark the active one", async ({ page }) => {
     const shell = new DashboardShell(page);
-    const tabs = page.getByRole("navigation", { name: "Secciones de hábitos" });
+    const tabs = page.getByRole("navigation", { name: habits.tabsLabel });
     await page.goto("/habits");
 
-    await expect(shell.pageTitle("Hábitos")).toBeVisible();
-    await expect(tabs.getByRole("link", { name: "Diario" })).toHaveAttribute(
+    await expect(shell.pageTitle(habits.title)).toBeVisible();
+    await expect(tabs.getByRole("link", { name: habits.tabs.daily })).toHaveAttribute(
       "aria-current",
       "page",
     );
@@ -27,8 +30,8 @@ test.describe("Hábitos", () => {
         "aria-current",
         "page",
       );
-      // The sidebar keeps "Hábitos" active across the three sections
-      await expect(shell.navLink("Hábitos")).toHaveAttribute("aria-current", "page");
+      // The sidebar keeps the habits link active across the three sections
+      await expect(shell.navLink(habits.navLink)).toHaveAttribute("aria-current", "page");
     }
   });
 });

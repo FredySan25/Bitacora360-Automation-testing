@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { waitForHydration } from "../support/hydration";
+import { ui } from "../support/ui";
 
 export class RegisterPage {
   readonly form: Locator;
@@ -14,14 +15,16 @@ export class RegisterPage {
 
   constructor(readonly page: Page) {
     this.form = page.locator("form");
-    this.heading = page.getByRole("heading", { name: "Crear cuenta" });
-    this.emailInput = page.getByLabel("Email");
-    this.passwordInput = page.getByLabel("Contraseña", { exact: true });
+    this.heading = page.getByRole("heading", { name: ui.register.heading });
+    this.emailInput = page.getByLabel(ui.auth.emailLabel);
+    this.passwordInput = page.getByLabel(ui.auth.passwordLabel, { exact: true });
     this.submitButton = this.form.locator('button[type="submit"]');
     this.errorAlert = this.form.getByRole("alert");
-    this.loginLink = page.getByRole("link", { name: "Inicia sesión" });
-    this.confirmationHeading = page.getByRole("heading", { name: "Revisa tu email" });
-    this.goToLoginLink = page.getByRole("link", { name: "Ir a iniciar sesión" });
+    this.loginLink = page.getByRole("link", { name: ui.register.loginLink });
+    this.confirmationHeading = page.getByRole("heading", {
+      name: ui.register.confirmationHeading,
+    });
+    this.goToLoginLink = page.getByRole("link", { name: ui.register.goToLoginLink });
   }
 
   async goto() {

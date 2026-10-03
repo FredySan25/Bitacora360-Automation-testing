@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { RegisterPage } from "../../pages/RegisterPage";
+import { ui } from "../../support/ui";
 
-test.describe("Registro", () => {
+test.describe("Register", () => {
   let registerPage: RegisterPage;
 
   test.beforeEach(async ({ page }) => {
@@ -9,16 +10,16 @@ test.describe("Registro", () => {
     await registerPage.goto();
   });
 
-  test("muestra el formulario de registro", async () => {
+  test("shows the register form", async () => {
     await expect(registerPage.heading).toBeVisible();
     await expect(registerPage.emailInput).toBeVisible();
     await expect(registerPage.passwordInput).toBeVisible();
-    await expect(registerPage.page.getByText("Mínimo 6 caracteres.")).toBeVisible();
-    await expect(registerPage.submitButton).toHaveText("Crear cuenta");
+    await expect(registerPage.page.getByText(ui.register.passwordHint)).toBeVisible();
+    await expect(registerPage.submitButton).toHaveText(ui.register.submit);
   });
 
-  test("exige una contraseña de al menos 6 caracteres", async ({ page }) => {
-    await registerPage.register("nuevo@bitacora360.test", "12345");
+  test("requires a password of at least 6 characters", async ({ page }) => {
+    await registerPage.register("new@bitacora360.test", "12345");
 
     const tooShort = await registerPage.passwordInput.evaluate(
       (el: HTMLInputElement) => el.validity.tooShort,
@@ -28,34 +29,34 @@ test.describe("Registro", () => {
     await expect(page).toHaveURL(/\/register$/);
   });
 
-  test("muestra la confirmación por email tras un registro exitoso", async () => {
-    const email = "nuevo@bitacora360.test";
+  test("shows the email confirmation after a successful signup", async () => {
+    const email = "new@bitacora360.test";
     await registerPage.mockSignup(200, { id: "00000000-0000-0000-0000-000000000000", email });
 
-    await registerPage.register(email, "clave-segura-123");
+    await registerPage.register(email, "secure-password-123");
 
     await expect(registerPage.confirmationHeading).toBeVisible();
     await expect(registerPage.page.getByText(email)).toBeVisible();
     await expect(registerPage.goToLoginLink).toHaveAttribute("href", "/login");
   });
 
-  test("avisa cuando el email ya tiene una cuenta", async () => {
+  test("warns when the email already has an account", async () => {
     await registerPage.mockSignup(422, {
       code: 422,
       error_code: "user_already_exists",
       msg: "User already registered",
     });
 
-    await registerPage.register("existente@bitacora360.test", "clave-segura-123");
+    await registerPage.register("existing@bitacora360.test", "secure-password-123");
 
-    await expect(registerPage.errorAlert).toHaveText("Ya existe una cuenta con ese email.");
+    await expect(registerPage.errorAlert).toHaveText(ui.register.emailTaken);
     await expect(registerPage.confirmationHeading).toBeHidden();
   });
 
-  test("el enlace de inicio de sesión lleva a /login", async ({ page }) => {
+  test("the login link goes to /login", async ({ page }) => {
     await registerPage.loginLink.click();
 
     await expect(page).toHaveURL(/\/login$/);
-    await expect(page.getByRole("heading", { name: "Iniciar sesión" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: ui.login.heading })).toBeVisible();
   });
 });

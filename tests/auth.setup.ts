@@ -1,8 +1,10 @@
 import { expect, test as setup } from "@playwright/test";
+import { DashboardShell } from "../pages/DashboardShell";
 import { LoginPage } from "../pages/LoginPage";
 import { getTestUser, STORAGE_STATE } from "../support/env";
+import { ui } from "../support/ui";
 
-setup("iniciar sesión con el usuario de pruebas", async ({ page }) => {
+setup("log in with the test user", async ({ page }) => {
   const user = getTestUser();
   const loginPage = new LoginPage(page);
 
@@ -10,7 +12,7 @@ setup("iniciar sesión con el usuario de pruebas", async ({ page }) => {
   await loginPage.login(user.email, user.password);
 
   await expect(page).toHaveURL(/\/today$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Entrada del día" })).toBeVisible();
+  await expect(new DashboardShell(page).pageTitle(ui.modules.today.title)).toBeVisible();
 
   await page.context().storageState({ path: STORAGE_STATE });
 });

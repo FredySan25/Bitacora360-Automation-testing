@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { waitForHydration } from "../support/hydration";
+import { ui } from "../support/ui";
 
 export class LoginPage {
   readonly form: Locator;
@@ -13,15 +14,17 @@ export class LoginPage {
 
   constructor(readonly page: Page) {
     this.form = page.locator("form");
-    this.heading = page.getByRole("heading", { name: "Iniciar sesión" });
-    this.emailInput = page.getByLabel("Email");
-    // exact: the show/hide toggle is also labelled "... contraseña"
-    this.passwordInput = page.getByLabel("Contraseña", { exact: true });
-    this.passwordToggle = page.getByRole("button", { name: /(Mostrar|Ocultar) contraseña/ });
+    this.heading = page.getByRole("heading", { name: ui.login.heading });
+    this.emailInput = page.getByLabel(ui.auth.emailLabel);
+    // exact: the show/hide toggle label also contains the password label
+    this.passwordInput = page.getByLabel(ui.auth.passwordLabel, { exact: true });
+    this.passwordToggle = page
+      .getByRole("button", { name: ui.auth.showPassword })
+      .or(page.getByRole("button", { name: ui.auth.hidePassword }));
     this.submitButton = this.form.locator('button[type="submit"]');
     // scoped to the form: Next.js adds its own role="alert" route announcer
     this.errorAlert = this.form.getByRole("alert");
-    this.registerLink = page.getByRole("link", { name: "Regístrate" });
+    this.registerLink = page.getByRole("link", { name: ui.login.registerLink });
   }
 
   async goto() {
