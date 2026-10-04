@@ -21,7 +21,7 @@ npm install
 npx playwright install chromium   # solo la primera vez
 
 npm test                  # toda la suite
-npm run test:auth         # solo las specs sin sesión; no requiere .env
+npm run test:auth         # solo las specs sin sesión; corre sin .env
 npm run test:dashboard    # specs con sesión (corre setup antes y logout después)
 npm run test:ui           # modo UI de Playwright
 npm run test:headed
@@ -41,6 +41,8 @@ No hace falta levantar la app a mano: Playwright corre `npm run dev` en `../Bita
 `playwright.config.ts` carga `.env` con `process.loadEnvFile` (por eso se requiere Node >= 20.12). Copia `.env.example` y llena `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` con un usuario de Supabase dedicado a pruebas y ya confirmado. Nunca una cuenta personal: la spec de logout cierra sesión de forma global y tumba todas las sesiones abiertas de ese usuario.
 
 Sin esas variables, el proyecto `auth` pasa igual, `setup` lanza un error (y `dashboard` no puede correr) y la spec de logout se salta sola.
+
+`MAILSAC_API_KEY` es opcional y activa `tests/auth/register-email.spec.ts`, que se salta sola si falta. Esa spec registra usuarios reales con direcciones `@mailsac.com` y lee el correo de confirmación por la API de Mailsac, así que el proyecto de Supabase necesita un SMTP propio: el servicio de correo por defecto solo entrega a los miembros de la organización. Con `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` la spec borra cada usuario que crea; sin ellas los usuarios `b360-e2e-...@mailsac.com` se quedan en Supabase.
 
 ## Arquitectura
 
@@ -62,5 +64,5 @@ Las carpetas reflejan los grupos de rutas de la app web: `tests/auth` cubre `app
 - Los locators viven en los page objects y usan roles y texto visible (`getByRole`, `getByLabel`), no clases CSS. El texto sale de `ui`, no de literales.
 - Después de navegar a una pantalla con formulario, espera la hidratación de React antes de escribir: `waitForHydration(locator)` de `support/hydration.ts`. Contra `next dev`, lo que se escribe antes de la hidratación nunca llega al estado de React. Los page objects ya lo hacen en `goto()`.
 - Acota las alertas al formulario (`form.getByRole("alert")`): Next.js agrega su propio anunciador de rutas con `role="alert"` en todas las páginas.
-- Las pruebas de registro simulan las llamadas a Supabase con `RegisterPage.mockSignup(status, body)`, `mockVerifyCode` y `mockResendCode`, que interceptan `**/auth/v1/signup*`, `verify*` y `resend*`; así no se crean usuarios reales ni se envían correos.
+- Las pruebas de registro simulan las llamadas a Supabase con `RegisterPage.mockSignup(status, body)`, `mockVerifyCode` y `mockResendCode`, que interceptan `**/auth/v1/signup*`, `verify*` y `resend*`; así no se crean usuarios reales ni se envían correos. La excepción es `register-email.spec.ts`, que recorre el registro sin mocks: `newInboxAddress()` y `waitForConfirmationEmail()` de `support/mailsac.ts` dan una dirección nueva por prueba y el código y el enlace del correo. Cada prueba ahí gasta un correo y llamadas de la cuota de Mailsac, así que los demás casos del registro siguen con mocks.
 - Las pruebas del dashboard no deben depender de los datos que ya tenga el usuario de pruebas. Si una prueba necesita datos, los crea y los borra ella misma.

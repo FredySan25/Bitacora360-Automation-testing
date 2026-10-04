@@ -20,3 +20,18 @@ export function getTestUser(): { email: string; password: string } {
 
   return { email, password };
 }
+
+export function hasMailsac(): boolean {
+  return Boolean(process.env.MAILSAC_API_KEY);
+}
+
+/** API key of the Mailsac account used to read the emails the app sends. */
+export function getMailsacApiKey(): string {
+  const key = process.env.MAILSAC_API_KEY;
+
+  if (!key) {
+    throw new Error("Missing MAILSAC_API_KEY. Add your Mailsac API key to .env.");
+  }
+
+  return key;
+}

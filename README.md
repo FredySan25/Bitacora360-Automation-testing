@@ -21,6 +21,20 @@ Para las pruebas con sesión necesitas un **usuario dedicado para pruebas**:
 No uses tu cuenta personal: la prueba de logout cierra todas las sesiones del
 usuario, incluida la que tengas abierta en tu navegador.
 
+### Registro con correo real (opcional)
+
+`tests/auth/register-email.spec.ts` registra un usuario de verdad y confirma la
+cuenta con el código y con el enlace del correo, que lee de un buzón de
+[Mailsac](https://mailsac.com). Sin `MAILSAC_API_KEY` en `.env` se salta sola.
+
+- `MAILSAC_API_KEY`: la API key de tu cuenta de Mailsac.
+- `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`: opcionales, para que la prueba
+  borre los usuarios que crea. Sin ellas se quedan en Supabase con correos
+  `b360-e2e-...@mailsac.com`. La clave de servicio nunca se sube al repositorio.
+
+El proyecto de Supabase necesita un SMTP propio configurado: el servicio de
+correo por defecto solo entrega a los miembros de la organización.
+
 ## Ejecución
 
 No hace falta levantar la app antes: Playwright corre `npm run dev` en
@@ -52,7 +66,7 @@ Para probar contra una app desplegada, define `BASE_URL` en `.env`.
 
 ```
 pages/       Page objects: locators y acciones de cada pantalla
-support/     Utilidades compartidas (credenciales, espera de hidratación)
+support/     Utilidades compartidas (credenciales, espera de hidratación, Mailsac)
   locales/        Textos visibles de la app, un archivo por idioma (hoy solo es.ts)
 tests/
   auth.setup.ts   Inicia sesión una vez y guarda la sesión en .auth/
@@ -87,6 +101,6 @@ La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
   (`waitForHydration`) antes de escribir; los page objects ya lo hacen en `goto()`.
 - Las pruebas de registro simulan las respuestas de Supabase (`mockSignup`,
   `mockVerifyCode`, `mockResendCode`) para no crear usuarios reales ni enviar
-  correos.
+  correos. La excepción es `register-email.spec.ts`, que usa correo real.
 - Las pruebas del dashboard no deben depender de los datos que ya tenga el
   usuario: si una prueba necesita datos, que los cree y los borre ella misma.

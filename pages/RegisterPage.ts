@@ -44,6 +44,18 @@ export class RegisterPage {
     await this.submitButton.click();
   }
 
+  /** Registers against the real Supabase and returns the id of the user it created. */
+  async registerAndGetUserId(email: string, password: string): Promise<string> {
+    const signupResponse = this.page.waitForResponse(
+      (response) =>
+        response.url().includes("/auth/v1/signup") && response.request().method() === "POST",
+    );
+    await this.register(email, password);
+
+    const body = await (await signupResponse).json();
+    return body.user?.id ?? body.id;
+  }
+
   /** The code step replaces the signup form with its own, so the submit button is the same locator. */
   async verifyCode(code: string) {
     await this.codeInput.fill(code);
