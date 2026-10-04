@@ -85,7 +85,8 @@ La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
   (`getByRole`, `getByLabel`), no clases CSS.
 - Después de navegar a una pantalla con formulario, espera la hidratación
   (`waitForHydration`) antes de escribir; los page objects ya lo hacen en `goto()`.
-- Las pruebas de registro simulan la respuesta de Supabase (`mockSignup`) para
-  no crear usuarios reales ni enviar correos.
+- Las pruebas de registro simulan las respuestas de Supabase (`mockSignup`,
+  `mockVerifyCode`, `mockResendCode`) para no crear usuarios reales ni enviar
+  correos.
 - Las pruebas del dashboard no deben depender de los datos que ya tenga el
   usuario: si una prueba necesita datos, que los cree y los borre ella misma.

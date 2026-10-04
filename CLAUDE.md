@@ -62,5 +62,5 @@ Las carpetas reflejan los grupos de rutas de la app web: `tests/auth` cubre `app
 - Los locators viven en los page objects y usan roles y texto visible (`getByRole`, `getByLabel`), no clases CSS. El texto sale de `ui`, no de literales.
 - Después de navegar a una pantalla con formulario, espera la hidratación de React antes de escribir: `waitForHydration(locator)` de `support/hydration.ts`. Contra `next dev`, lo que se escribe antes de la hidratación nunca llega al estado de React. Los page objects ya lo hacen en `goto()`.
 - Acota las alertas al formulario (`form.getByRole("alert")`): Next.js agrega su propio anunciador de rutas con `role="alert"` en todas las páginas.
-- Las pruebas de registro simulan la llamada a Supabase con `RegisterPage.mockSignup(status, body)`, que intercepta `**/auth/v1/signup*`; así no se crean usuarios reales ni se envían correos.
+- Las pruebas de registro simulan las llamadas a Supabase con `RegisterPage.mockSignup(status, body)`, `mockVerifyCode` y `mockResendCode`, que interceptan `**/auth/v1/signup*`, `verify*` y `resend*`; así no se crean usuarios reales ni se envían correos.
 - Las pruebas del dashboard no deben depender de los datos que ya tenga el usuario de pruebas. Si una prueba necesita datos, los crea y los borra ella misma.

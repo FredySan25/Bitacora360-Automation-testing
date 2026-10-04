@@ -38,6 +38,47 @@ test.describe("Register", () => {
     await expect(registerPage.confirmationHeading).toBeVisible();
     await expect(registerPage.page.getByText(email)).toBeVisible();
     await expect(registerPage.goToLoginLink).toHaveAttribute("href", "/login");
+    await expect(registerPage.codeInput).toBeVisible();
+    await expect(registerPage.submitButton).toHaveText(ui.register.verifySubmit);
+  });
+
+  test.describe("confirmation code", () => {
+    const email = "new@bitacora360.test";
+
+    test.beforeEach(async () => {
+      await registerPage.mockSignup(200, { id: "00000000-0000-0000-0000-000000000000", email });
+      await registerPage.register(email, "secure-password-123");
+      await expect(registerPage.confirmationHeading).toBeVisible();
+    });
+
+    test("only accepts digits in the code", async () => {
+      await registerPage.codeInput.fill("12ab34");
+
+      await expect(registerPage.codeInput).toHaveValue("1234");
+    });
+
+    test("rejects a wrong or expired code", async ({ page }) => {
+      await registerPage.mockVerifyCode(403, {
+        code: 403,
+        error_code: "otp_expired",
+        msg: "Token has expired or is invalid",
+      });
+
+      await registerPage.verifyCode("123456");
+
+      await expect(registerPage.errorAlert).toHaveText(ui.register.invalidCode);
+      await expect(page).toHaveURL(/\/register$/);
+      // The form is usable again after the error
+      await expect(registerPage.submitButton).toBeEnabled();
+    });
+
+    test("sends the code again on request", async () => {
+      await registerPage.mockResendCode(200, {});
+
+      await registerPage.resendCodeButton.click();
+
+      await expect(registerPage.codeResentNotice).toHaveText(ui.register.codeResent);
+    });
   });
 
   test("warns when the email already has an account", async () => {

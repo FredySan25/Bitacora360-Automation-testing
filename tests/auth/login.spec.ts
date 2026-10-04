@@ -62,6 +62,13 @@ test.describe("Login", () => {
     await expect(loginPage.passwordInput).toHaveAttribute("type", "password");
   });
 
+  test("an invalid confirmation link lands on /login with a notice", async ({ page }) => {
+    await page.goto("/auth/confirm");
+
+    await expect(page).toHaveURL(/\/login\?error=confirmation_link$/);
+    await expect(loginPage.errorAlert).toHaveText(ui.login.confirmationLinkInvalid);
+  });
+
   test("the register link goes to /register", async ({ page }) => {
     await loginPage.registerLink.click();
 

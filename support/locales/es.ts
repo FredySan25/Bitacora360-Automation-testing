@@ -11,6 +11,8 @@ export const es = {
     submit: "Entrar",
     registerLink: "Regístrate",
     invalidCredentials: "Email o contraseña incorrectos.",
+    confirmationLinkInvalid:
+      "Ese enlace de confirmación ya no es válido o ya se usó. Si ya confirmaste tu cuenta, inicia sesión.",
   },
   register: {
     heading: "Crear cuenta",
@@ -20,6 +22,11 @@ export const es = {
     emailTaken: "Ya existe una cuenta con ese email.",
     confirmationHeading: "Revisa tu email",
     goToLoginLink: "Ir a iniciar sesión",
+    codeLabel: "Código de verificación",
+    verifySubmit: "Confirmar código",
+    resendCode: "Reenviar código",
+    codeResent: "Te enviamos un código nuevo.",
+    invalidCode: "El código es incorrecto o ya expiró. Revísalo o pide uno nuevo.",
   },
   shell: {
     logout: "Cerrar sesión",
