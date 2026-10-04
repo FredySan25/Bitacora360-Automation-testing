@@ -42,6 +42,23 @@ export const es = {
       title: "Hábitos",
       tabsLabel: "Secciones de hábitos",
       tabs: { daily: "Diario", progress: "Progreso", gym: "Gym" },
+      newHabit: "Nuevo hábito",
+      nameLabel: "Nombre",
+      createSubmit: "Crear hábito",
+      saveSubmit: "Guardar",
+      cancel: "Cancelar",
+      archive: "Archivar",
+      restore: "Restaurar",
+      delete: "Eliminar",
+      editHabit: (name: string) => `Editar ${name}`,
+      // Indexed like Date.getDay(): Sunday first
+      weekdays: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+      everyDay: "Todos los días",
+      otherDays: "Otros días",
+      noWeekdays: "Elige al menos un día.",
+      streak: (days: number) => `Racha de ${days} ${days === 1 ? "día" : "días"}`,
+      deleteConfirm: (name: string) =>
+        `¿Eliminar "${name}" y todo su historial? Esta acción no se puede deshacer.`,
     },
     finance: {
       navLink: "Finanzas",

@@ -71,7 +71,7 @@ support/     Utilidades compartidas (credenciales, espera de hidratación, Mails
 tests/
   auth.setup.ts   Inicia sesión una vez y guarda la sesión en .auth/
   auth/           Sin sesión: login, registro y protección de rutas
-  dashboard/      Con sesión: una spec por módulo (today, habits, finance, watchlist)
+  dashboard/      Con sesión: today, habits (pestañas y CRUD), finance, watchlist
   session/        Logout
 ```
 
@@ -104,3 +104,7 @@ La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
   correos. La excepción es `register-email.spec.ts`, que usa correo real.
 - Las pruebas del dashboard no deben depender de los datos que ya tenga el
   usuario: si una prueba necesita datos, que los cree y los borre ella misma.
+- Las specs del dashboard corren en paralelo con el mismo usuario: cada prueba
+  usa un nombre único para sus datos y solo verifica su propia fila. En hábitos,
+  `HabitsPage.createHabit()` y `deleteCreatedHabits()` se encargan de crear y
+  borrar.
