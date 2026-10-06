@@ -8,9 +8,7 @@ import { expect, type Locator } from "@playwright/test";
 export async function waitForHydration(locator: Locator) {
   await expect
     .poll(() =>
-      locator.evaluate((el) =>
-        Object.keys(el).some((key) => key.startsWith("__reactProps$")),
-      ),
+      locator.evaluate((el) => Object.keys(el).some((key) => key.startsWith("__reactProps$"))),
     )
     .toBe(true);
 }

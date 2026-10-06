@@ -52,6 +52,8 @@ No hace falta levantar la app antes: Playwright corre `npm run dev` en
 | `npm run report`         | Abre el reporte HTML de la última corrida                 |
 | `npm run codegen`        | Graba acciones en el navegador y genera locators          |
 | `npm run typecheck`      | Revisa los tipos de TypeScript                            |
+| `npm run lint`           | Linter (oxlint): errores de código y promesas sin `await` |
+| `npm run format`         | Da formato con Prettier (`format:check` solo revisa)      |
 
 Un archivo o una prueba en particular:
 
@@ -61,6 +63,13 @@ npx playwright test -g "wrong credentials"
 ```
 
 Para probar contra una app desplegada, define `BASE_URL` en `.env`.
+
+## Integración continua
+
+`.github/workflows/ci.yml` corre en cada push a `main` y en cada pull request,
+y por ahora solo revisa el código de la suite: tipos, linter y formato. Las
+specs no corren en CI todavía, porque necesitan la app (que vive en otro
+repositorio) y un usuario de pruebas.
 
 ## Estructura
 

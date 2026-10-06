@@ -18,6 +18,8 @@ export async function deleteUser(userId: string): Promise<void> {
   });
 
   if (!response.ok) {
-    throw new Error(`Supabase answered ${response.status} deleting user ${userId}: ${await response.text()}`);
+    throw new Error(
+      `Supabase answered ${response.status} deleting user ${userId}: ${await response.text()}`,
+    );
   }
 }

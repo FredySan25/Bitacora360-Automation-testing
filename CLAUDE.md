@@ -28,7 +28,9 @@ npm run test:headed
 npm run test:debug
 npm run report            # abre el reporte HTML de la última corrida
 npm run codegen           # graba acciones contra http://localhost:3000
-npm run typecheck         # tsc --noEmit; es la única verificación estática, no hay linter
+npm run typecheck         # tsc --noEmit
+npm run lint              # oxlint con información de tipos: un await olvidado es un error
+npm run format            # Prettier; format:check solo revisa
 
 npx playwright test tests/auth/login.spec.ts        # un archivo
 npx playwright test -g "wrong credentials"          # una prueba por título
@@ -58,6 +60,12 @@ Consecuencia: después de cualquier corrida que incluya `dashboard`, el `.auth/u
 Las carpetas reflejan los grupos de rutas de la app web: `tests/auth` cubre `app/(auth)` y `tests/dashboard` cubre `app/(dashboard)`. Las specs nuevas van en la carpeta de su grupo de rutas, una por módulo o pantalla, y el proyecto correspondiente las toma a través de su `testDir`.
 
 `pages/` contiene los page objects (locators como campos `readonly` más las acciones). `DashboardShell` modela el layout compartido por todas las páginas del dashboard (menú lateral, enlaces de navegación, título de página, logout) y es lo que usan las specs del dashboard que solo navegan. Una pantalla con interacción propia tiene además su page object: `HabitsPage` para el checklist de `/habits`, `ProgressPage` para `/habits/progress` y `GymPage` para `/habits/gym`. Cuando la pantalla repite un bloque con formulario propio, ese bloque tiene su clase en el mismo archivo, como `WorkoutCard` en `GymPage.ts`.
+
+## Verificación estática
+
+Antes de dar por terminado un cambio pasan `npm run typecheck`, `npm run lint` y `npm run format:check`.
+
+El linter es oxlint (`.oxlintrc.json`) y no ESLint, porque `typescript-eslint` todavía no soporta TypeScript 7. Corre las reglas de corrección más las de promesas (`no-floating-promises`, `no-misused-promises`, `await-thenable`): en Playwright casi todo es asíncrono, y un `expect(locator)` o una acción sin `await` no hace fallar la prueba. No tiene reglas propias de Playwright, así que estas se cuidan a mano: nada de `waitForTimeout`, ningún `test.only` (`forbidOnly` lo rechaza en CI) y toda prueba con al menos una aserción.
 
 ## Convenciones
 
