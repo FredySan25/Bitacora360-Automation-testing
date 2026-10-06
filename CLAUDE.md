@@ -27,6 +27,7 @@ npm run test:ui           # modo UI de Playwright
 npm run test:headed
 npm run test:debug
 npm run report            # abre el reporte HTML de la última corrida
+npm run report:allure     # genera y abre el reporte de Allure de la última corrida
 npm run codegen           # graba acciones contra http://localhost:3000
 npm run typecheck         # tsc --noEmit
 npm run lint              # oxlint con información de tipos: un await olvidado es un error
@@ -69,12 +70,14 @@ El linter es oxlint (`.oxlintrc.json`) y no ESLint, porque `typescript-eslint` t
 
 ## Integración continua
 
-`.github/workflows/ci.yml` tiene tres jobs encadenados: `static` (tipos, lint, formato), `e2e` (descarga la app como carpeta hermana y corre toda la suite) y `report` (publica `playwright-report/` en GitHub Pages desde `main`, también con pruebas fallidas). Los secretos y la configuración de Pages están en el README.
+`.github/workflows/ci.yml` tiene tres jobs encadenados: `static` (tipos, lint, formato), `e2e` (descarga la app como carpeta hermana, corre toda la suite y arma el sitio) y `report` (lo publica en GitHub Pages desde `main`, también con pruebas fallidas). Los secretos y la configuración de Pages están en el README.
 
-El reporte publicado es público, y eso condiciona la configuración:
+Cada corrida escribe dos reportes: el HTML de Playwright (`playwright-report/`) y los resultados de Allure (`allure-results/`, que `support/clean-allure-results.ts` vacía al empezar). El sitio publicado lleva el reporte de Allure en la raíz, generado con `allure generate` según `allurerc.ts`, y el de Playwright en `/playwright/`. La tendencia entre corridas sale de `allure-history.jsonl`, que el job descarga del sitio publicado antes de generar y vuelve a subir.
+
+El sitio es público, y eso condiciona la configuración:
 
 - En CI `trace` está apagado: una traza guarda la contraseña y los tokens de sesión. No se vuelve a encender ahí.
-- Playwright titula cada paso con el valor que escribe (`Fill "<valor>"`). `support/redact-password-reporter.ts` reemplaza `E2E_USER_PASSWORD` por `***` y el workflow revisa el reporte antes de subirlo. Si una prueba nueva escribe otro secreto por la UI, hay que agregarlo al reporter y a esa revisión.
+- Playwright titula cada paso con el valor que escribe (`Fill "<valor>"`). `support/redact-password-reporter.ts` reemplaza `E2E_USER_PASSWORD` por `***` y el workflow revisa el sitio antes de subirlo. Ese reporter va primero en la lista de `playwright.config.ts`: Allure copia el título de un paso en cuanto empieza, y con otro orden la contraseña queda en `allure-results/`. Si una prueba nueva escribe otro secreto por la UI, hay que agregarlo al reporter y a esa revisión.
 - `MAILSAC_API_KEY` y `SUPABASE_SERVICE_ROLE_KEY` no están en CI; `register-email.spec.ts` se salta ahí.
 
 El job `e2e` usa un grupo de `concurrency` porque la spec de logout revoca todas las sesiones del usuario: dos corridas simultáneas, incluida una local, se tumban entre sí.

@@ -2,8 +2,8 @@ import type { Reporter, TestCase, TestResult, TestStep } from "@playwright/test/
 
 /**
  * Keeps the test user's password out of the reports. Playwright titles a step
- * after the value it types (`Fill "<value>"`), and the HTML report of the CI
- * runs is published to GitHub Pages.
+ * after the value it types (`Fill "<value>"`), and the reports of the CI runs
+ * are published to GitHub Pages.
  */
 export default class RedactPasswordReporter implements Reporter {
   private readonly password = process.env.E2E_USER_PASSWORD;

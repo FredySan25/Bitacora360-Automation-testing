@@ -64,26 +64,44 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm test
-      # The report is public, so it is only published after checking that the
-      # reporter in support/ redacted the password. The HTML report embeds its
-      # data as a zip, which a plain grep cannot read
-      - name: Check that the report does not contain the password
+      # Allure draws the trend between runs from this file, which every run
+      # publishes next to the report. The first run finds nothing to bring back
+      - name: Bring back the history of the published report
+        if: ${{ !cancelled() }}
+        run: >
+          curl -fsSL --retry 3 -o allure-history.jsonl
+          https://fredysan25.github.io/Bitacora360-Automation-testing/allure-history.jsonl
+          || rm -f allure-history.jsonl
+      # The site has the Allure report at the root and the Playwright one,
+      # which has more detail to debug a failure, under /playwright
+      - name: Build the site
+        if: ${{ !cancelled() }}
+        run: |
+          npx allure generate allure-results
+          mkdir site
+          cp -r allure-report/. site
+          cp -r playwright-report site/playwright
+          cp allure-history.jsonl site
+      # The site is public, so it is only published after checking that the
+      # reporter in support/ redacted the password. The Playwright report
+      # embeds its data as a zip, which a plain grep cannot read
+      - name: Check that the site does not contain the password
         id: check
         if: ${{ !cancelled() }}
         shell: bash
         run: |
-          grep -o 'data:application/zip;base64,[A-Za-z0-9+/=]*' playwright-report/index.html \
+          grep -o 'data:application/zip;base64,[A-Za-z0-9+/=]*' site/playwright/index.html \
             | cut -d, -f2 | base64 -d > "$RUNNER_TEMP/report.zip"
           unzip -q "$RUNNER_TEMP/report.zip" -d "$RUNNER_TEMP/report"
-          if grep -rqF -- "$E2E_USER_PASSWORD" "$RUNNER_TEMP/report" playwright-report; then
-            echo "::error::The report contains the password of the test user"
+          if grep -rqF -- "$E2E_USER_PASSWORD" "$RUNNER_TEMP/report" site; then
+            echo "::error::The site contains the password of the test user"
             exit 1
           fi
       - uses: actions/upload-pages-artifact@v3
         id: upload
         if: ${{ !cancelled() && steps.check.outcome == 'success' && github.ref == 'refs/heads/main' }}
         with:
-          path: Bitacora360-Automation-testing/playwright-report/
+          path: Bitacora360-Automation-testing/site/
 
   report:
     name: Publish the report to GitHub Pages

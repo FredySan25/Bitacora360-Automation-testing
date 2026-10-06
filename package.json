@@ -14,6 +14,7 @@
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "report": "playwright show-report",
+    "report:allure": "allure open allure-results",
     "codegen": "playwright codegen http://localhost:3000",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
@@ -23,6 +24,8 @@
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "@types/node": "^26.6.4",
+    "allure": "^3.20.0",
+    "allure-playwright": "^3.13.0",
     "oxlint": "^1.87.0",
     "oxlint-tsgolint": "^7.0.2003",
     "prettier": "^3.9.9",

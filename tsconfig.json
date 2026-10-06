@@ -11,5 +11,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["playwright.config.ts", "pages", "support", "tests"]
+  "include": ["playwright.config.ts", "allurerc.ts", "pages", "support", "tests"]
 }

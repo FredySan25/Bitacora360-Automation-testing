@@ -15,7 +15,15 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: [["list"], ["./support/redact-password-reporter.ts"], ["html", { open: "never" }]],
+  globalSetup: "./support/clean-allure-results.ts",
+  // The redacting reporter goes first: Allure copies the title of a step as
+  // soon as it begins
+  reporter: [
+    ["./support/redact-password-reporter.ts"],
+    ["list"],
+    ["html", { open: "never" }],
+    ["allure-playwright"],
+  ],
   expect: { timeout: 10_000 },
 
   use: {
