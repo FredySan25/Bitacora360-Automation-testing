@@ -66,16 +66,66 @@ Para probar contra una app desplegada, define `BASE_URL` en `.env`.
 
 ## Integración continua
 
-`.github/workflows/ci.yml` corre en cada push a `main` y en cada pull request,
-y por ahora solo revisa el código de la suite: tipos, linter y formato. Las
-specs no corren en CI todavía, porque necesitan la app (que vive en otro
-repositorio) y un usuario de pruebas.
+`.github/workflows/ci.yml` corre en cada push a `main`, en cada pull request y
+a mano desde la pestaña Actions. Lo último sirve después de un cambio en la
+app, que vive en otro repositorio y por eso no dispara este workflow. Son tres
+jobs encadenados:
+
+1. **static** — tipos, linter y formato de la suite.
+2. **e2e** — descarga este repositorio y el de la app como carpetas hermanas,
+   levanta la app con `npm run dev` y corre toda la suite en Chromium.
+3. **report** — publica el reporte HTML de Playwright en GitHub Pages, también
+   cuando hay pruebas fallidas. Solo publican las corridas de `main`.
+
+El reporte de la última corrida de `main` queda en
+<https://fredysan25.github.io/Bitacora360-Automation-testing/>.
+
+### Configuración en GitHub
+
+En Settings → Secrets and variables → Actions, como _repository secrets_:
+
+| Secreto                         | Valor                                        |
+| ------------------------------- | -------------------------------------------- |
+| `E2E_USER_EMAIL`                | Correo del usuario de pruebas                |
+| `E2E_USER_PASSWORD`             | Su contraseña                                |
+| `NEXT_PUBLIC_SUPABASE_URL`      | El mismo valor que en `.env.local` de la app |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | El mismo valor que en `.env.local` de la app |
+
+Y en Settings → Pages, **Source: GitHub Actions**.
+
+`MAILSAC_API_KEY` no se configura en CI, así que las pruebas de registro con
+correo real se saltan ahí y solo corren en local.
+
+### El reporte es público
+
+Cualquiera puede abrirlo, así que no debe contener secretos:
+
+- En CI no se graban trazas (`trace` en `playwright.config.ts`): una traza
+  guarda las peticiones de red, con la contraseña y los tokens de sesión.
+- Playwright titula cada paso con el valor que escribe (`Fill "<valor>"`).
+  `support/redact-password-reporter.ts` reemplaza la contraseña del usuario de
+  pruebas por `***`, y el workflow revisa el reporte antes de subirlo: si la
+  encuentra, no publica.
+- El correo del usuario de pruebas sí aparece en el reporte.
+
+El job `e2e` no corre dos veces a la vez (`concurrency`), porque la prueba de
+logout cierra todas las sesiones del usuario. Por lo mismo, no corras la suite
+en local mientras hay una corrida en GitHub.
+
+### Pendiente
+
+Usar en CI un usuario de pruebas propio, distinto del de local y con un correo
+que no sea de un buzón público como los de Mailsac. El correo queda a la vista
+en el reporte, y un buzón que cualquiera puede leer no debería ser el de una
+cuenta con sesión. Con usuarios separados, además, una corrida en GitHub y una
+en local dejan de cerrarse la sesión entre sí. Solo hay que crear el usuario en
+Supabase y cambiar los secretos `E2E_USER_EMAIL` y `E2E_USER_PASSWORD`.
 
 ## Estructura
 
 ```
 pages/       Page objects: locators y acciones de cada pantalla
-support/     Utilidades compartidas (credenciales, espera de hidratación, diálogos, Mailsac)
+support/     Utilidades compartidas (credenciales, espera de hidratación, diálogos, Mailsac, reporter)
   locales/        Textos visibles de la app, un archivo por idioma (hoy solo es.ts)
 tests/
   auth.setup.ts   Inicia sesión una vez y guarda la sesión en .auth/

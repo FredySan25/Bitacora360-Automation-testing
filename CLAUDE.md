@@ -67,6 +67,18 @@ Antes de dar por terminado un cambio pasan `npm run typecheck`, `npm run lint` y
 
 El linter es oxlint (`.oxlintrc.json`) y no ESLint, porque `typescript-eslint` todavía no soporta TypeScript 7. Corre las reglas de corrección más las de promesas (`no-floating-promises`, `no-misused-promises`, `await-thenable`): en Playwright casi todo es asíncrono, y un `expect(locator)` o una acción sin `await` no hace fallar la prueba. No tiene reglas propias de Playwright, así que estas se cuidan a mano: nada de `waitForTimeout`, ningún `test.only` (`forbidOnly` lo rechaza en CI) y toda prueba con al menos una aserción.
 
+## Integración continua
+
+`.github/workflows/ci.yml` tiene tres jobs encadenados: `static` (tipos, lint, formato), `e2e` (descarga la app como carpeta hermana y corre toda la suite) y `report` (publica `playwright-report/` en GitHub Pages desde `main`, también con pruebas fallidas). Los secretos y la configuración de Pages están en el README.
+
+El reporte publicado es público, y eso condiciona la configuración:
+
+- En CI `trace` está apagado: una traza guarda la contraseña y los tokens de sesión. No se vuelve a encender ahí.
+- Playwright titula cada paso con el valor que escribe (`Fill "<valor>"`). `support/redact-password-reporter.ts` reemplaza `E2E_USER_PASSWORD` por `***` y el workflow revisa el reporte antes de subirlo. Si una prueba nueva escribe otro secreto por la UI, hay que agregarlo al reporter y a esa revisión.
+- `MAILSAC_API_KEY` y `SUPABASE_SERVICE_ROLE_KEY` no están en CI; `register-email.spec.ts` se salta ahí.
+
+El job `e2e` usa un grupo de `concurrency` porque la spec de logout revoca todas las sesiones del usuario: dos corridas simultáneas, incluida una local, se tumban entre sí.
+
 ## Convenciones
 
 - Los locators viven en los page objects y usan roles y texto visible (`getByRole`, `getByLabel`), no clases CSS. El texto sale de `ui`, no de literales.

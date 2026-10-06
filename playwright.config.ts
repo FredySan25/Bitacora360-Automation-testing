@@ -15,12 +15,14 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  reporter: [["list"], ["html", { open: "never" }]],
+  reporter: [["list"], ["./support/redact-password-reporter.ts"], ["html", { open: "never" }]],
   expect: { timeout: 10_000 },
 
   use: {
     baseURL,
-    trace: "on-first-retry",
+    // The CI report is published to GitHub Pages, and a trace records the
+    // password and the session tokens of the test user
+    trace: process.env.CI ? "off" : "on-first-retry",
     screenshot: "only-on-failure",
   },
 
