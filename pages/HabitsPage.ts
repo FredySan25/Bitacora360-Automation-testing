@@ -97,7 +97,11 @@ export class HabitsPage {
     const { apikey, authorization } = await request.allHeaders();
     const { origin, pathname } = new URL(request.url());
     const { id } = await response.json();
-    this.createdHabits.push({ id, endpoint: origin + pathname, headers: { apikey, authorization } });
+    this.createdHabits.push({
+      id,
+      endpoint: origin + pathname,
+      headers: { apikey, authorization },
+    });
   }
 
   /** Checks or unchecks a habit and waits for the save: the checkbox changes before Supabase answers. */
@@ -109,17 +113,6 @@ export class HabitsPage {
     );
     await this.checkbox(name).click();
     await saveResponse;
-  }
-
-  /** Answers the next `window.confirm` and resolves to the message it showed. */
-  answerNextDialog(answer: "accept" | "dismiss"): Promise<string> {
-    return new Promise((resolve) => {
-      this.page.once("dialog", async (dialog) => {
-        const message = dialog.message();
-        await (answer === "accept" ? dialog.accept() : dialog.dismiss());
-        resolve(message);
-      });
-    });
   }
 
   /**

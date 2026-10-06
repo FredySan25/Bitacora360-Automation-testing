@@ -59,6 +59,42 @@ export const es = {
       streak: (days: number) => `Racha de ${days} ${days === 1 ? "día" : "días"}`,
       deleteConfirm: (name: string) =>
         `¿Eliminar "${name}" y todo su historial? Esta acción no se puede deshacer.`,
+      progress: {
+        tiles: {
+          today: "Hoy",
+          last7Days: "Últimos 7 días",
+          last30Days: "Últimos 30 días",
+          bestActiveStreak: "Mejor racha activa",
+        },
+        charts: {
+          weekly: "Cumplimiento por semana",
+          daily: "Día a día",
+          perHabit: "Por hábito",
+        },
+        heatmapLabel: "Mapa de calor del cumplimiento diario de las últimas semanas",
+        days: (count: number) => `${count} ${count === 1 ? "día" : "días"}`,
+        nothingScheduled: "—",
+      },
+      gym: {
+        dateLabel: "Fecha",
+        titleLabel: "Título (opcional)",
+        createSubmit: "Registrar entrenamiento",
+        defaultTitle: "Entrenamiento",
+        showMore: "Ver más",
+        deleteWorkout: "Eliminar entrenamiento",
+        deleteWorkoutConfirm: "¿Eliminar este entrenamiento con todas sus series?",
+        noSets: "Aún no hay series. Registra la primera.",
+        exerciseLabel: "Ejercicio",
+        repsLabel: "Reps",
+        weightLabel: "Peso (kg)",
+        addSet: "Agregar serie",
+        // The weight comes formatted as the app shows it: a comma for decimals ("62,5")
+        weightedSet: (reps: number, weight: string) => `${reps} × ${weight} kg`,
+        bodyweightSet: (reps: number) => `${reps} reps`,
+        deleteSet: (set: string) => `Eliminar serie ${set}`,
+        progressHeading: "Progreso por ejercicio",
+        bestMark: (value: string) => `Mejor marca: ${value}`,
+      },
     },
     finance: {
       navLink: "Finanzas",

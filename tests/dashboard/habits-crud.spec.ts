@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { expect, test } from "@playwright/test";
 import { HabitsPage } from "../../pages/HabitsPage";
+import { answerNextDialog } from "../../support/dialogs";
 import { ui } from "../../support/ui";
 
 const habits = ui.modules.habits;
@@ -145,7 +146,7 @@ test.describe("Habits CRUD", () => {
     await habitsPage.createHabit(name);
     await habitsPage.editButton(name).click();
 
-    const confirmMessage = habitsPage.answerNextDialog("accept");
+    const confirmMessage = answerNextDialog(habitsPage.page, "accept");
     await habitsPage.deleteButton.click();
 
     expect(await confirmMessage).toBe(habits.deleteConfirm(name));
@@ -160,7 +161,7 @@ test.describe("Habits CRUD", () => {
     await habitsPage.createHabit(name);
     await habitsPage.editButton(name).click();
 
-    const confirmMessage = habitsPage.answerNextDialog("dismiss");
+    const confirmMessage = answerNextDialog(habitsPage.page, "dismiss");
     await habitsPage.deleteButton.click();
     await confirmMessage;
 

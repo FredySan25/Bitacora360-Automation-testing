@@ -41,17 +41,17 @@ No hace falta levantar la app antes: Playwright corre `npm run dev` en
 `../Bitacora360WebProyect` y lo apaga al terminar. Si ya está corriendo en
 `http://localhost:3000`, reutiliza ese servidor.
 
-| Comando                  | Qué hace                                             |
-| ------------------------ | ---------------------------------------------------- |
-| `npm test`               | Corre toda la suite                                  |
-| `npm run test:auth`      | Solo las pruebas sin sesión (no requieren `.env`)    |
-| `npm run test:dashboard` | Solo las pruebas con sesión                          |
-| `npm run test:ui`        | Modo UI: correr, depurar y ver cada paso             |
-| `npm run test:headed`    | Corre con el navegador visible                       |
-| `npm run test:debug`     | Paso a paso con el inspector de Playwright           |
-| `npm run report`         | Abre el reporte HTML de la última corrida            |
-| `npm run codegen`        | Graba acciones en el navegador y genera locators     |
-| `npm run typecheck`      | Revisa los tipos de TypeScript                       |
+| Comando                  | Qué hace                                                  |
+| ------------------------ | --------------------------------------------------------- |
+| `npm test`               | Corre toda la suite                                       |
+| `npm run test:auth`      | Solo las pruebas sin sesión (no requieren `.env`)         |
+| `npm run test:dashboard` | Solo las pruebas con sesión                               |
+| `npm run test:ui`        | Modo UI: correr, depurar y ver cada paso                  |
+| `npm run test:headed`    | Corre con el navegador visible                            |
+| `npm run test:debug`     | Paso a paso con el inspector de Playwright                |
+| `npm run report`         | Abre el reporte HTML de la última corrida                 |
+| `npm run codegen`        | Graba acciones en el navegador y genera locators          |
+| `npm run typecheck`      | Revisa los tipos de TypeScript                            |
 
 Un archivo o una prueba en particular:
 
@@ -66,12 +66,12 @@ Para probar contra una app desplegada, define `BASE_URL` en `.env`.
 
 ```
 pages/       Page objects: locators y acciones de cada pantalla
-support/     Utilidades compartidas (credenciales, espera de hidratación, Mailsac)
+support/     Utilidades compartidas (credenciales, espera de hidratación, diálogos, Mailsac)
   locales/        Textos visibles de la app, un archivo por idioma (hoy solo es.ts)
 tests/
   auth.setup.ts   Inicia sesión una vez y guarda la sesión en .auth/
   auth/           Sin sesión: login, registro y protección de rutas
-  dashboard/      Con sesión: today, habits (pestañas y CRUD), finance, watchlist
+  dashboard/      Con sesión: today, habits (pestañas, CRUD, progreso y gym), finance, watchlist
   session/        Logout
 ```
 
@@ -107,4 +107,7 @@ La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
 - Las specs del dashboard corren en paralelo con el mismo usuario: cada prueba
   usa un nombre único para sus datos y solo verifica su propia fila. En hábitos,
   `HabitsPage.createHabit()` y `deleteCreatedHabits()` se encargan de crear y
-  borrar.
+  borrar; en el gym, `GymPage.createWorkout()`, `addSet()` y
+  `deleteCreatedData()`.
+- Las pantallas que suman los datos de todo el usuario, como `/habits/progress`,
+  se prueban por la fila de la prueba y no por sus totales.
