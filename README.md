@@ -130,12 +130,15 @@ mismo usuario que en CI, no corras la suite mientras hay una corrida en GitHub.
 
 ```
 pages/       Page objects: locators y acciones de cada pantalla
-support/     Utilidades compartidas (credenciales, espera de hidratación, diálogos, Mailsac, reporters)
+  components/     Bloques que comparten varias pantallas (modal de confirmación, selector de mes, tarjetas)
+support/     Utilidades compartidas (credenciales, espera de hidratación, diálogos, fechas,
+             limpieza y mocks de Supabase, Mailsac, reporters)
   locales/        Textos visibles de la app, un archivo por idioma (hoy solo es.ts)
 tests/
   auth.setup.ts   Inicia sesión una vez y guarda la sesión en .auth/
   auth/           Sin sesión: login, registro y protección de rutas
-  dashboard/      Con sesión: today, habits (pestañas, CRUD, progreso y gym), finance, watchlist
+  dashboard/      Con sesión: today, habits (pestañas, CRUD, progreso y gym),
+                  finance (pestañas y mes, movimientos, presupuestos, resumen y metas), watchlist
   session/        Logout
 ```
 
@@ -175,3 +178,18 @@ La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
   `deleteCreatedData()`.
 - Las pantallas que suman los datos de todo el usuario, como `/habits/progress`,
   se prueban por la fila de la prueba y no por sus totales.
+- En finanzas cada prueba trabaja en un año pasado que es solo suyo
+  (`ownYear(testInfo)` de `support/own-year.ts`, entre 1800 y 1999) y abre la
+  pantalla en un mes de ese año (`gotoOwnMonth("1950-03")`), así que ahí sí puede
+  afirmar totales exactos. `gotoOwnMonth()` vacía primero ese año, por si una
+  corrida anterior dejó algo; los movimientos y las metas que crea la prueba se
+  borran con `deleteCreatedData()`.
+- Los presupuestos rigen en todos los meses posteriores, así que no caben en un
+  año propio: `finance-budgets.spec.ts` es la única spec que los crea, corre en
+  serie y limpia su categoría antes y después de cada prueba.
+- Finanzas confirma los borrados con un modal de la página, no con
+  `window.confirm`: se responde con `ConfirmDialog` (`deleteDialog` en cada page
+  object), no con `answerNextDialog`.
+- Los estados que el usuario de pruebas no puede garantizar (lista vacía, error
+  al cargar o al guardar) se simulan respondiendo la llamada a Supabase con
+  `mockSupabaseTable()`, mediante métodos como `mockNoGoals()` o `mockLoadError()`.

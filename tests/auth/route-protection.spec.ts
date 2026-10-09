@@ -7,6 +7,9 @@ const PROTECTED_ROUTES = [
   "/habits/progress",
   "/habits/gym",
   "/finance",
+  "/finance/budgets",
+  "/finance/summary",
+  "/finance/goals",
   "/watchlist",
 ];
 
