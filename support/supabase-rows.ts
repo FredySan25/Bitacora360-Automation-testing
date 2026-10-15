@@ -119,3 +119,27 @@ export async function mockSupabaseTable(page: Page, table: string, mock: Mock) {
     },
   );
 }
+
+/**
+ * Holds the calls the app makes to a Supabase table with that method until
+ * the returned function is called; then they go on to Supabase. It lets a
+ * test see what the screen shows while it waits.
+ */
+export async function holdSupabaseTable(
+  page: Page,
+  table: string,
+  method: string,
+): Promise<() => void> {
+  let release = () => {};
+  const released = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route(
+    (url) => isCallTo(url.href, table),
+    async (route) => {
+      if (route.request().method() === method) await released;
+      await route.fallback();
+    },
+  );
+  return release;
+}

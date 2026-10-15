@@ -362,7 +362,69 @@ export const es = {
     watchlist: {
       navLink: "Watchlist",
       title: "Watchlist",
-      description: "Películas y series por ver.",
+      description: "Películas, series y libros por ver y leer.",
+      loading: "Cargando tu lista...",
+      loadError: "No pudimos cargar tu lista. Recarga la página para intentar de nuevo.",
+      saveError: "No pudimos guardar el cambio. Revisa tu conexión e intenta de nuevo.",
+      empty: "Tu lista está vacía. Agrega la próxima película, serie o libro.",
+      filterLegend: "Filtrar por tipo",
+      allTypes: "Todo",
+      // The keys are the ones the app saves
+      types: {
+        movie: { label: "Película", plural: "Películas" },
+        series: { label: "Serie", plural: "Series" },
+        book: { label: "Libro", plural: "Libros" },
+      },
+      /** A filter without items, from the plural of its type: "No tienes películas en tu lista." */
+      noneOfType: (plural: string) => `No tienes ${plural.toLowerCase()} en tu lista.`,
+      addTitle: "Agregar título",
+      newTitle: "Nuevo título",
+      typeLegend: "Tipo",
+      titleLabel: "Título",
+      statusLabel: "Estado",
+      // Books are read, movies and series are watched
+      statuses: {
+        movie: { pending: "Por ver", in_progress: "Viendo", done: "Vista" },
+        series: { pending: "Por ver", in_progress: "Viendo", done: "Vista" },
+        book: { pending: "Por leer", in_progress: "Leyendo", done: "Leído" },
+      },
+      finishedOnLabel: "Terminado el",
+      ratingLegend: "Calificación (opcional)",
+      stars: (count: number) => (count === 1 ? "1 estrella" : `${count} estrellas`),
+      clearRating: "Quitar calificación",
+      reviewLabel: "Reseña (opcional)",
+      createSubmit: "Agregar",
+      saveSubmit: "Guardar",
+      saving: "Guardando...",
+      cancel: "Cancelar",
+      // In the order the board shows them
+      sections: { in_progress: "En curso", pending: "Pendientes", done: "Terminados" },
+      /** "Pendientes (3)" */
+      sectionHeading: (section: string, count: number) => `${section} (${count})`,
+      /** A section heading with any count, which the other tests change. */
+      sectionHeadingPattern: (section: string) => new RegExp(`^${section} \\(\\d+\\)$`),
+      /** Line under the title: "Película · Por ver", or "Libro · Leído el 14 oct 2026" once finished. */
+      detail: (type: string, status: string, finishedOn?: string) =>
+        finishedOn ? `${type} · ${status} el ${finishedOn}` : `${type} · ${status}`,
+      review: (note: string) => `“${note}”`,
+      edit: (title: string) => `Editar ${title}`,
+      delete: (title: string) => `Eliminar ${title}`,
+      ratingOf: (title: string) => `Calificación de ${title}`,
+      start: { watch: "Empezar a ver", read: "Empezar a leer" },
+      finish: { watch: "Marcar como vista", read: "Marcar como leído" },
+      deleteTitle: (title: string) => `¿Eliminar "${title}"?`,
+      deleteMessage: DELETE_WARNING,
+      confirmDelete: "Eliminar",
+      todayCard: {
+        loadError: "No pudimos cargar tu lista.",
+        empty: "Tu lista está vacía. ¿Qué quieres ver o leer después?",
+        emptyAction: "+ Agregar título",
+        inProgress: "En curso",
+        nothingInProgress: "Nada en curso por ahora.",
+        more: (count: number) => `y ${count} más`,
+        pendingLabel: "Pendientes",
+        doneLabel: "Terminados",
+      },
     },
   },
 };

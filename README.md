@@ -138,7 +138,8 @@ tests/
   auth.setup.ts   Inicia sesión una vez y guarda la sesión en .auth/
   auth/           Sin sesión: login, registro y protección de rutas
   dashboard/      Con sesión: today, habits (pestañas, CRUD, progreso y gym),
-                  finance (pestañas y mes, movimientos, presupuestos, resumen y metas), watchlist
+                  finance (pestañas y mes, movimientos, presupuestos, resumen y metas),
+                  watchlist (agregar, filtrar, avanzar, calificar, editar y eliminar)
   session/        Logout
 ```
 
@@ -193,3 +194,7 @@ La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
 - Los estados que el usuario de pruebas no puede garantizar (lista vacía, error
   al cargar o al guardar) se simulan respondiendo la llamada a Supabase con
   `mockSupabaseTable()`, mediante métodos como `mockNoGoals()` o `mockLoadError()`.
+  Para ver lo que la pantalla muestra mientras espera (cargando, guardando),
+  `holdSupabaseTable()` retiene la llamada hasta que la prueba la suelta.
+- En watchlist cada prueba busca sus títulos por nombre y nunca afirma los
+  conteos de las secciones ("Pendientes (3)"), que cambian con las otras pruebas.
