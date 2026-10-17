@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { searchCatalog } from "../../pages/WatchlistPage";
 import { ui } from "../../support/ui";
 
 const PROTECTED_ROUTES = [
@@ -27,5 +28,13 @@ test.describe("Route protection without a session", () => {
     await page.goto("/");
 
     await expect(page).toHaveURL(/\/login$/);
+  });
+
+  // It answers before searching, so no catalog is reached
+  test("the catalog search of the watchlist answers 401", async ({ request }) => {
+    const response = await searchCatalog(request, { type: "movie", q: "Spirited Away" });
+
+    expect(response.status()).toBe(401);
+    expect(await response.json()).toEqual({ error: "unauthorized" });
   });
 });

@@ -136,15 +136,17 @@ support/     Utilidades compartidas (credenciales, espera de hidratación, diál
   locales/        Textos visibles de la app, un archivo por idioma (hoy solo es.ts)
 tests/
   auth.setup.ts   Inicia sesión una vez y guarda la sesión en .auth/
-  auth/           Sin sesión: login, registro y protección de rutas
+  auth/           Sin sesión: login, registro, protección de rutas y la página pública /about
   dashboard/      Con sesión: today, habits (pestañas, CRUD, progreso y gym),
                   finance (pestañas y mes, movimientos, presupuestos, resumen y metas),
-                  watchlist (agregar, filtrar, avanzar, calificar, editar y eliminar)
+                  watchlist (agregar, filtrar, avanzar, calificar, editar y eliminar;
+                  sugerencias del catálogo y pósters en watchlist-catalog.spec.ts)
   session/        Logout
 ```
 
 La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
-`tests/dashboard` cubre `app/(dashboard)`.
+`tests/dashboard` cubre `app/(dashboard)`. Las rutas públicas fuera de un grupo,
+como `/about`, van en `tests/auth`, que es el proyecto sin sesión.
 
 ### Proyectos de Playwright
 
@@ -198,3 +200,6 @@ La estructura refleja la del proyecto web: `tests/auth` cubre `app/(auth)` y
   `holdSupabaseTable()` retiene la llamada hasta que la prueba la suelta.
 - En watchlist cada prueba busca sus títulos por nombre y nunca afirma los
   conteos de las secciones ("Pendientes (3)"), que cambian con las otras pruebas.
+- Ninguna prueba llega a los catálogos reales (TMDB, Google Books, Open Library):
+  `WatchlistPage` responde la búsqueda (`mockCatalog`, sin resultados por defecto)
+  y las imágenes de los pósters (un PNG, o un 404 con `mockBrokenPosters`).

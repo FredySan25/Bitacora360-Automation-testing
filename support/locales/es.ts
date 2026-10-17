@@ -87,6 +87,26 @@ export const es = {
   },
   shell: {
     logout: "Cerrar sesión",
+    aboutLink: "Acerca de",
+  },
+  // The public page with the credits of the catalogs
+  about: {
+    documentTitle: "Acerca de · Bitácora360",
+    heading: "Acerca de Bitácora360",
+    sections: {
+      what: "Qué es",
+      moviesAndSeries: "Películas y series",
+      books: "Libros",
+    },
+    tmdbLogo: "Logo de TMDB",
+    tmdbLink: "TMDB",
+    tmdbNotice:
+      "Este producto usa la API de TMDB, pero no está respaldado ni certificado por TMDB.",
+    // TMDB asks for its notice in English too
+    tmdbNoticeInEnglish: "This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    googleBooksLink: "Google Books",
+    openLibraryLink: "Open Library",
+    backLink: "← Volver a Bitácora360",
   },
   // The modal that asks before deleting; each screen names its own confirm button
   dialog: {
@@ -415,6 +435,29 @@ export const es = {
       deleteTitle: (title: string) => `¿Eliminar "${title}"?`,
       deleteMessage: DELETE_WARNING,
       confirmDelete: "Eliminar",
+      // Books have a cover; movies and series, a poster. `type` is a key of `types`
+      poster: (title: string, type: string) =>
+        `${type === "book" ? "Portada" : "Póster"} de ${title}`,
+      /** The stand-in of an item without a poster, or whose poster fails to load. */
+      noPoster: (title: string, type: string) =>
+        `${type === "book" ? "Sin portada" : "Sin póster"}: ${title}`,
+      /** The line under the board, before its link. */
+      attribution: "Pósters y datos de TMDB, Google Books y Open Library",
+      creditsLink: "Créditos",
+      catalog: {
+        suggestionsLabel: "Sugerencias para título",
+        /** Line under a suggestion: "2001 · Gabriel García Márquez", or either alone. */
+        suggestionDetail: (year: number | null, byline: string | null) =>
+          [year, byline].filter(Boolean).join(" · "),
+        searching: "Buscando en el catálogo...",
+        noResults: "Sin resultados en el catálogo; puedes agregarlo igual.",
+        searchError: "No pudimos buscar en el catálogo. Puedes escribir el título a mano.",
+        // The keys are the ones the app saves
+        sources: { tmdb: "TMDB", google_books: "Google Books", open_library: "Open Library" },
+        fromCatalog: (source: string) => `Del catálogo de ${source}`,
+        // Drops the whole link: poster, year and id
+        removeLink: "Quitar del catálogo",
+      },
       todayCard: {
         loadError: "No pudimos cargar tu lista.",
         empty: "Tu lista está vacía. ¿Qué quieres ver o leer después?",
